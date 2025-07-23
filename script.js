@@ -8,7 +8,8 @@ function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
   episodeList.forEach( episode => {
-    console.log(episode.name);
+    const eachEpisode = document.createElement("div");
+
   });
 }
 
