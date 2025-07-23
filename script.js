@@ -19,4 +19,19 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
+const pageFooter = document.createElement("footer");
+
+const footerText = document.createElement("p");
+footerText.textContent = "Episode information is sourced from ";
+
+const hyperLink = document.createElement("a");
+hyperLink.href = "https://www.tvmaze.com/shows/82/game-of-thrones";
+hyperLink.target = "_blank";
+hyperLink.textContent = "TVmaze";
+
+footerText.appendChild(hyperLink);
+pageFooter.appendChild(footerText);
+document.body.appendChild(pageFooter);
+
+
 window.onload = setup;
