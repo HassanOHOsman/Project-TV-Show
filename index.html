@@ -9,13 +9,16 @@
   </head>
 
   <body>
-    <input 
-      type="text" 
-      id="searchInput" 
-      placeholder="Search episodes..." 
-      style="margin: 20px; padding: 10px; width: 300px;">
-    <div id="root">
+    <div id="searchItems">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search episodes..."
+        style="margin: 20px; padding: 10px; width: 300px"
+      />
+      <p id="resultCount" style="display: inline-block;"></p>
     </div>
+    <div id="root"></div>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
     <script src="episodes.js"></script>

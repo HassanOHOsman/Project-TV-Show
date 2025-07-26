@@ -34,6 +34,8 @@ function displayEpisodes(episodeList) {
       <p>${episode.summary}</p>`;
 
     rootElem.appendChild(divEpisode);
+    const resultCount = document.getElementById("resultCount");
+    resultCount.textContent = `Showing ${episodeList.length} Episodes`;
   });
 }
 
