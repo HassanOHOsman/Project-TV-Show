@@ -2,6 +2,43 @@
 function setup() {
   const allEpisodes = getAllEpisodes();
   displayEpisodes(allEpisodes);
+
+  //Add Select Items
+  const episodeSelector = document.getElementById("selectEpisode");
+  const allOptions = document.createElement("option");
+  allOptions.textContent = "Show All Episodes";
+  allOptions.value = "All";
+  episodeSelector.insertBefore(allOptions, episodeSelector.firstChild);
+
+  allEpisodes.forEach((episode) => {
+    const episodeCode =
+      "S" +
+      String(episode.season).padStart(2, "0") +
+      "E" +
+      String(episode.number).padStart(2, "0") +
+      "- ";
+    const selectorDisplayText = episodeCode + episode.name;
+    const episodeOption = document.createElement("option");
+    episodeOption.textContent = selectorDisplayText;
+    episodeOption.value = episode.id;
+    episodeSelector.appendChild(episodeOption);
+  });
+  episodeSelector.addEventListener("change", (event) => {
+    const selectedValue = event.target.value;
+    if (selectedValue === "All") {
+      displayEpisodes(allEpisodes);
+    } else {
+      const selectedEpisode = allEpisodes.find(
+        (episode) => episode.id === Number(selectedValue)
+      );
+
+      if (selectedEpisode) {
+        displayEpisodes([selectedEpisode]);
+      }
+    }
+  });
+
+  //live Search Filtering
   const searchBox = document.getElementById("searchInput");
   searchBox.addEventListener("input", function () {
     const searchItem = searchBox.value.toLowerCase();
