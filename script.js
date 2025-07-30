@@ -1,6 +1,31 @@
 //You can edit ALL of the code here
+
+//creating the drop-down menu of all episodes:
+
+const allEpisodes = getAllEpisodes();
+const selector = document.createElement("select");
+
+allEpisodes.forEach((episode) => {
+  const option = document.createElement("option");
+
+  const episodeCode = "S" + String(episode.season).padStart(2, "0") + "E" + String(episode.number).padStart(2, "0");
+
+  const itemTitle = `${episodeCode} - ${episode.name}`;
+  option.value = episode.url;
+
+  selector.appendChild(option);
+});
+
+document.body.insertBefore(selector, document.body.firstChild)
+
+
+
+
+
+
+
 function setup() {
-  const allEpisodes = getAllEpisodes();
+  
   makePageForEpisodes(allEpisodes);
 }
 
