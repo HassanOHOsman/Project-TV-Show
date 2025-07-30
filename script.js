@@ -1,7 +1,22 @@
 //You can edit ALL of the code here
+
+const waitingMessage = document.createElement("p");
+document.body.appendChild(waitingMessage);
+
 function setup() {
-  const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+  // const allEpisodes = getAllEpisodes();
+  // makePageForEpisodes(allEpisodes);
+  waitingMessage.textContent = "Episodes are loading, please wait...";
+  fetch("https://api.tvmaze.com/shows/82/episodes")
+    .then(response => {
+      if (!response.ok) throw new Error("An error occurred while fetching data. Please try again later.");
+      return response.json();
+    })
+    .then(data => {
+      waitingMessage.textContent = "";
+    })
+
+
 }
 
 function makePageForEpisodes(episodeList) {
