@@ -14,6 +14,7 @@ function setup() {
     })
     .then(data => {
       waitingMessage.textContent = "";
+      showEpisodes(data);
     })
 
 
