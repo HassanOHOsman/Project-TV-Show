@@ -1,6 +1,6 @@
 //You can edit ALL of the code here
 
-//creating the drop-down menu of all episodes:
+//Creating the drop-down menu of all episodes:
 
 const allEpisodes = getAllEpisodes();
 const selector = document.createElement("select");
@@ -20,13 +20,40 @@ document.body.insertBefore(selector, document.body.firstChild)
 
 
 
+//Creating a live & interactive search bar:
+
+const searchBar = document.createElement("input");
+searchBar.placeholder = "Finf an episode";
+document.body.insertBefore(searchBar, selector.nextSibling);
+
+const episodeCountDisplay = document.createElement("p");
+document.body.insertBefore(episodeCountDisplay, searchBar.nextSibling);
+
+selector.addEventListener("change", () => {
+  const selectedUrl = selector.value;
+  if (selectedUrl) {
+    window.open(selectedUrl, "_blank");
+  }
+});
 
 
 
 
-function setup() {
-  
+function setup() { 
   makePageForEpisodes(allEpisodes);
+
+  searchBar.addEventListener("input", () => {
+    const searchTerm = searchBar.value.toLocaleLowerCase();
+    const matchingEpisodes = allEpisodes.filter((episode) =>{
+      const name = episode.name.toLocaleLowerCase();
+      const summary = episode.summary.toLocaleLowerCase();
+      return name.includes(searchTerm) || summary.includes(searchTerm);
+
+  });
+  episodeCountDisplay.textContent = `Displaying ${matchingEpisodes.length}/${allEpisodes.length} episodes.`;
+  makePageForEpisodes(matchingEpisodes);
+ });
+
 }
 
 function makePageForEpisodes(episodeList) {
