@@ -1,50 +1,18 @@
 //You can edit ALL of the code here
 
-//Creating the drop-down menu of all episodes:
-
-
-
-allEpisodes.forEach((episode) => {
-  const option = document.createElement("option");
-  const episodeCode = "S" + String(episode.season).padStart(2, "0") + "E" + String(episode.number).padStart(2, "0");
-  const itemTitle = `${episodeCode} - ${episode.name}`;
-
-  option.textContent = itemTitle;
-  option.value = episode.url;
-
-  selector.appendChild(option);
-});
-
-document.body.insertBefore(selector, document.body.firstChild);
-
-
-
-//Creating a live & interactive search bar:
-
-const searchBar = document.createElement("input");
-searchBar.placeholder = "Find an episode";
-document.body.insertBefore(searchBar, selector.nextSibling);
-
-const episodeCountDisplay = document.createElement("p");
-document.body.insertBefore(episodeCountDisplay, searchBar.nextSibling);
-
-selector.addEventListener("change", () => {
-  const selectedUrl = selector.value;
-  if (selectedUrl) {
-    window.open(selectedUrl, "_blank");
-  }
-});
-
-
-
 
 const userNotification = document.createElement("p");
 document.body.appendChild(userNotification);
 
+let allEpisodes = [];
+
 function setup() {
   // const allEpisodes = getAllEpisodes();
   // makePageForEpisodes(allEpisodes);
+  const selector = document.createElement("select");
+  
   userNotification.textContent = "Episodes are loading, please wait...";
+
   fetch("https://api.tvmaze.com/shows/82/episodes")
     .then(response => {
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -52,7 +20,44 @@ function setup() {
     })
     .then(data => {
       userNotification.textContent = "";
-      makePageForEpisodes(data);
+      allEpisodes = data;
+
+      makePageForEpisodes(allEpisodes);
+
+
+      allEpisodes.forEach((episode) => {
+        const option = document.createElement("option");
+        const episodeCode =
+          "S" +
+          String(episode.season).padStart(2, "0") +
+          "E" +
+          String(episode.number).padStart(2, "0");
+        const itemTitle = `${episodeCode} - ${episode.name}`;
+
+        option.textContent = itemTitle;
+        option.value = episode.url;
+
+        selector.appendChild(option);
+      });
+
+      document.body.insertBefore(selector, document.body.firstChild);
+
+      const searchBar = document.createElement("input");
+      searchBar.placeholder = "Find an episode";
+      document.body.insertBefore(searchBar, selector.nextSibling);
+
+      const episodeCountDisplay = document.createElement("p");
+      document.body.insertBefore(episodeCountDisplay, searchBar.nextSibling);
+
+      selector.addEventListener("change", () => {
+        const selectedUrl = selector.value;
+        if (selectedUrl) {
+          window.open(selectedUrl, "_blank");
+        }
+
+    });
+
+
     })
     .catch(() => {
       userNotification.textContent = "Oops! We couldn't load the episodes. Please try again later.";
