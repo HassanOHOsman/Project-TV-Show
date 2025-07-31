@@ -14,7 +14,7 @@ function setup() {
     })
     .then(data => {
       userNotification.textContent = "";
-      showEpisodes(data);
+      makePageForEpisodes(data);
     })
     .catch(() => {
       userNotification.textContent = "Oops! We couldn't load the episodes. Please try again later.";
@@ -26,9 +26,12 @@ function setup() {
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
+  rootElem.innerHTML = "";
+
   episodeList.forEach(episode => {
     const eachEpisode = document.createElement("div");
     const episodeCode = "S" + String(episode.season).padStart(2, "0") + "E" + String(episode.number).padStart(2, "0");
+
     eachEpisode.innerHTML = `
       <h3>${episode.name} - ${episodeCode}</h3>
       <img src="${episode.image.medium}" alt="Thumbnail for ${episode.name} - Episode ${episode.number} - Season ${episode.season}">
