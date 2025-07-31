@@ -43,6 +43,17 @@ function setup() {
       document.body.insertBefore(selector, document.body.firstChild);
 
       const searchBar = document.createElement("input");
+      searchBar.addEventListener("input", () =>{
+        const searchTerm = searchBar.value.toLocaleLowerCase();
+        const filteredEpisodes = allEpisodes.filter((episode) => {
+          const nameMatch = episode.name.toLocaleLowerCase().includes(searchTerm);
+          const summaryMatch = episode.summary.toLocaleLowerCase().includes(searchTerm);
+          return nameMatch || summaryMatch;
+
+        });
+        makePageForEpisodes(filteredEpisodes);
+      })
+
       searchBar.placeholder = "Find an episode";
       document.body.insertBefore(searchBar, selector.nextSibling);
 
