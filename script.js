@@ -66,7 +66,7 @@ function setup() {
 
       return { showData, episodeData };
     })
-    .then((showData, episodeData) => {
+    .then(({showData, episodeData}) => {
       userNotification.textContent = "";
       allEpisodes = episodeData;
 
@@ -97,12 +97,12 @@ function setup() {
 
   // Helper to fill shows dropdown
   function populateShowsDropdown(episodes) {
-    episodeSelector.innerHTML = "";
+    showSelector.innerHTML = "";
 
     const defaultOption1 = document.createElement("option");
     defaultOption1.textContent = "Display all shows";
     defaultOption1.value = "";
-    episodeSelector.appendChild(defaultOption1);
+    showSelector.appendChild(defaultOption1);
 
     episodes.forEach((episode) => {
       
@@ -120,9 +120,7 @@ function setup() {
 
     episodes.forEach((episode) => {
       const option = document.createElement("option");
-      const code = `S${String(episode.season).padStart(2, "0")}E${String(
-        episode.number
-      ).padStart(2, "0")}`;
+      const code = `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
       option.textContent = `${code} - ${episode.name}`;
       option.value = episode.url;
       episodeSelector.appendChild(option);
