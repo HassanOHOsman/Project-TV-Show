@@ -1,84 +1,19 @@
 //You can edit ALL of the code here
-
-//Creating the drop-down menu of all episodes:
-
-const allEpisodes = getAllEpisodes();
-const selector = document.createElement("select");
-
-allEpisodes.forEach((episode) => {
-  const option = document.createElement("option");
-  const episodeCode = "S" + String(episode.season).padStart(2, "0") + "E" + String(episode.number).padStart(2, "0");
-  const itemTitle = `${episodeCode} - ${episode.name}`;
-
-  option.textContent = itemTitle;
-  option.value = episode.url;
-
-  selector.appendChild(option);
-});
-
-document.body.insertBefore(selector, document.body.firstChild);
-
-
-
-//Creating a live & interactive search bar:
-
-const searchBar = document.createElement("input");
-searchBar.placeholder = "Find an episode";
-document.body.insertBefore(searchBar, selector.nextSibling);
-
-const episodeCountDisplay = document.createElement("p");
-document.body.insertBefore(episodeCountDisplay, searchBar.nextSibling);
-
-selector.addEventListener("change", () => {
-  const selectedUrl = selector.value;
-  if (selectedUrl) {
-    window.open(selectedUrl, "_blank");
-  }
-});
-
-
-
-
-function setup() { 
+function setup() {
+  const allEpisodes = getAllEpisodes();
   makePageForEpisodes(allEpisodes);
-
-  searchBar.addEventListener("input", () => {
-    const searchTerm = searchBar.value.toLocaleLowerCase();
-    const matchingEpisodes = allEpisodes.filter((episode) => {
-      const name = episode.name.toLocaleLowerCase();
-      const summary = episode.summary.toLocaleLowerCase();
-      return name.includes(searchTerm) || summary.includes(searchTerm);
-  });
-
-  episodeCountDisplay.textContent = `Displaying ${matchingEpisodes.length}/${allEpisodes.length} episodes.`;
-  makePageForEpisodes(matchingEpisodes);
- });
-
 }
-
-
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   // rootElem.textContent = `Got ${episodeList.length} episode(s)`;
-  rootElem.innerHTML = "";
-  
   episodeList.forEach(episode => {
     const eachEpisode = document.createElement("div");
     const episodeCode = "S" + String(episode.season).padStart(2, "0") + "E" + String(episode.number).padStart(2, "0");
-   
-    const episodeTitle = document.createElement("h2");
-    episodeTitle.textContent = `${episode.name} - ${episodeCode}`;
-
-    const episodeSummary = document.createElement("div");
-    episodeSummary.innerHTML = episode.summary;
-
-    const episodeImage = document.createElement("img");
-    episodeImage.src = episode.image.medium;
-
-    eachEpisode.appendChild(episodeTitle);
-    eachEpisode.appendChild(episodeImage);
-    eachEpisode.appendChild(episodeSummary);
+    eachEpisode.innerHTML = `
+      <h3>${episode.name} - ${episodeCode}</h3>
+      <img src="${episode.image.medium}" alt="Thumbnail for ${episode.name} - Episode ${episode.number} - Season ${episode.season}">
+      <p>${episode.summary}</p>`;
 
     rootElem.appendChild(eachEpisode);
   });
