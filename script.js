@@ -24,6 +24,12 @@ function setup() {
 
       makePageForEpisodes(allEpisodes);
 
+      const defaultOption = document.createElement("option");
+      defaultOption.textContent = "Show All Episodes";
+      defaultOption.value = "";
+      selector.appendChild(defaultOption);
+
+
 
       allEpisodes.forEach((episode) => {
         const option = document.createElement("option");
