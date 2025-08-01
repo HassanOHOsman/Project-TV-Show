@@ -2,7 +2,7 @@
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
-  rootElem.innerHTML = ""; // Clear previous episodes
+  rootElem.innerHTML = ""; 
 
   episodeList.forEach((episode) => {
     const episodeCode =
@@ -29,9 +29,13 @@ function setup() {
   const userNotification = document.createElement("p");
   document.body.insertBefore(userNotification, rootElem);
 
-  // Create dropdown selector
-  const selector = document.createElement("select");
-  document.body.insertBefore(selector, rootElem);
+  // Create dropdown show selector
+  const showSelector = document.createElement("select");
+  document.body.insertBefore(showSelector, rootElem);
+
+  // Create dropdown episode selector
+  const episodeSelector = document.createElement("select");
+  document.body.insertBefore(episodeSelector, rootElem);
 
   // Create search input
   const searchBar = document.createElement("input");
@@ -39,7 +43,7 @@ function setup() {
   searchBar.id = "episodeSearch";
   searchBar.name = "episodeSearch";
 
-  document.body.insertBefore(searchBar, selector.nextSibling);
+  document.body.insertBefore(searchBar, episodeSelector.nextSibling);
 
   // Create episode count display
   const episodeCountDisplay = document.createElement("p");
@@ -78,19 +82,19 @@ function setup() {
     episodeCountDisplay.textContent = `Displaying ${filtered.length}/${allEpisodes.length} episodes.`;
   });
 
-  selector.addEventListener("change", () => {
-    const url = selector.value;
+  episodeSelector.addEventListener("change", () => {
+    const url = episodeSelector.value;
     if (url) window.open(url, "_blank");
   });
 
   // Helper to fill dropdown
   function populateDropdown(episodes) {
-    selector.innerHTML = "";
+    episodeSelector.innerHTML = "";
 
     const defaultOption = document.createElement("option");
     defaultOption.textContent = "Show all episodes";
     defaultOption.value = "";
-    selector.appendChild(defaultOption);
+    episodeSelector.appendChild(defaultOption);
 
     episodes.forEach((episode) => {
       const option = document.createElement("option");
@@ -99,7 +103,7 @@ function setup() {
       ).padStart(2, "0")}`;
       option.textContent = `${code} - ${episode.name}`;
       option.value = episode.url;
-      selector.appendChild(option);
+      episodeSelector.appendChild(option);
     });
   }
 }
