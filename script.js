@@ -53,16 +53,24 @@ function setup() {
 
   userNotification.textContent = "Loading episodes, please wait...";
 
-  fetch("https://api.tvmaze.com/shows/82/episodes")
-    .then((response) => {
-      if (!response.ok) throw new Error("Network error");
-      return response.json();
-    })
-    .then((data) => {
-      userNotification.textContent = "";
-      allEpisodes = data;
+  Promise.all([
+    fetch("https://api.tvmaze.com/shows"),
+    fetch("https://api.tvmaze.com/shows/82/episodes"),
+  ])
+    .then(async ([showResponse, episodeResponse]) => {
+      if (!showResponse.ok || !episodeResponse.ok) {
+        throw new Error("Network error");
+      }
+      const showData = await showResponse.json();
+      const episodeData = await episodeResponse.json();
 
-      populateDropdown(allEpisodes);
+      return { showData, episodeData };
+    })
+    .then((showData, episodeData) => {
+      userNotification.textContent = "";
+      allEpisodes = episodeData;
+
+      populateEpisodesDropdown(allEpisodes);
       makePageForEpisodes(allEpisodes);
       episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
     })
@@ -87,14 +95,28 @@ function setup() {
     if (url) window.open(url, "_blank");
   });
 
-  // Helper to fill dropdown
-  function populateDropdown(episodes) {
+  // Helper to fill shows dropdown
+  function populateShowsDropdown(episodes) {
     episodeSelector.innerHTML = "";
 
-    const defaultOption = document.createElement("option");
-    defaultOption.textContent = "Show all episodes";
-    defaultOption.value = "";
-    episodeSelector.appendChild(defaultOption);
+    const defaultOption1 = document.createElement("option");
+    defaultOption1.textContent = "Display all shows";
+    defaultOption1.value = "";
+    episodeSelector.appendChild(defaultOption1);
+
+    episodes.forEach((episode) => {
+      
+    });
+  }
+
+  // Helper to fill episodes dropdown
+  function populateEpisodesDropdown(episodes) {
+    episodeSelector.innerHTML = "";
+
+    const defaultOption2 = document.createElement("option");
+    defaultOption2.textContent = "Show all episodes";
+    defaultOption2.value = "";
+    episodeSelector.appendChild(defaultOption2);
 
     episodes.forEach((episode) => {
       const option = document.createElement("option");
