@@ -1,5 +1,5 @@
 //You can edit ALL of the code here
-
+let showSelector;
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML = ""; // Clear previous episodes
@@ -22,16 +22,20 @@ function makePageForEpisodes(episodeList) {
     rootElem.appendChild(eachEpisode);
   });
 }
-function setup() {
+
+async function setup() {
   const rootElem = document.getElementById("root");
 
   // Create notification paragraph for loading/errors
   const userNotification = document.createElement("p");
   document.body.insertBefore(userNotification, rootElem);
 
-  // Create dropdown selector for TV SHow Selection
-  const showSelector = document.createElement("select");
+  // Create dropdown selector for TV Show Selection
+  showSelector = document.createElement("select");
   document.body.insertBefore(showSelector, rootElem);
+  const allShows = await fetchAllShows();
+  allShows.sort((a,b)=>a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+  populateShowSelector(allShows);
 
   // Create dropdown selector
   const selector = document.createElement("select");
@@ -108,17 +112,42 @@ function setup() {
   }
 }
 
+// Helper to fill dropdown show selector
+  function populateShowSelector(shows) {
+    showSelector.innerHTML = "";
+
+    const defaultOption = document.createElement("option");
+    defaultOption.textContent = "Show all Shows";
+    defaultOption.value = "";
+    showSelector.appendChild(defaultOption);
+
+    shows.forEach((show) => {
+      const option = document.createElement("option");
+      option.textContent = show.name;
+      option.value = show.id;
+      showSelector.appendChild(option);
+    });
+  }
+
+
+// async function fetchAllShows() {
+//   return [
+//     { id: 1, name: "Test Show 1" },
+//     { id: 2, name: "Test Show 2" },
+//     { id: 3, name: "Test Show 3" },
+//   ];
+// }
 async function fetchAllShows() {
   let pageNumber = 0;
   let allShows = [];
 
-  while (true) {
+  while (pageNumber<5) {
     const URL = `https://api.tvmaze.com/shows?page=${pageNumber}`;
     const response = await fetch(URL);
     if (response.status === 404) {
       break;
     } else {
-      const data=await response.json();
+      const data = await response.json();
       if (data.length === 0) {
         break;
       } else {
