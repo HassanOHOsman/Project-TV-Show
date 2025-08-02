@@ -29,6 +29,10 @@ function setup() {
   const userNotification = document.createElement("p");
   document.body.insertBefore(userNotification, rootElem);
 
+  // Create dropdown selector for TV SHow Selection
+  const showSelector = document.createElement("select");
+  document.body.insertBefore(showSelector, rootElem);
+
   // Create dropdown selector
   const selector = document.createElement("select");
   document.body.insertBefore(selector, rootElem);
@@ -104,7 +108,27 @@ function setup() {
   }
 }
 
+async function fetchAllShows() {
+  let pageNumber = 0;
+  let allShows = [];
 
+  while (true) {
+    const URL = `https://api.tvmaze.com/shows?page=${pageNumber}`;
+    const response = await fetch(URL);
+    if (response.status === 404) {
+      break;
+    } else {
+      const data=await response.json();
+      if (data.length === 0) {
+        break;
+      } else {
+        allShows = allShows.concat(data);
+        pageNumber++;
+      }
+    }
+  }
+  return allShows;
+}
 //Creating a page footer:
 
 const pageFooter = document.createElement("footer");
@@ -120,6 +144,5 @@ hyperLink.textContent = "TVmaze";
 footerText.appendChild(hyperLink);
 pageFooter.appendChild(footerText);
 document.body.appendChild(pageFooter);
-
 
 window.onload = setup;
