@@ -1,5 +1,10 @@
 //You can edit ALL of the code here
-let showSelector;
+let selector;
+let episodeCountDisplay;
+let userNotification;
+let allEpisodes = [];
+let searchBar;
+const episodeCache=new Map();
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
   rootElem.innerHTML = ""; // Clear previous episodes
@@ -27,7 +32,7 @@ async function setup() {
   const rootElem = document.getElementById("root");
 
   // Create notification paragraph for loading/errors
-  const userNotification = document.createElement("p");
+   userNotification = document.createElement("p");
   document.body.insertBefore(userNotification, rootElem);
 
   // Create dropdown selector for TV Show Selection
@@ -38,11 +43,11 @@ async function setup() {
   populateShowSelector(allShows);
 
   // Create dropdown selector
-  const selector = document.createElement("select");
+  selector = document.createElement("select");
   document.body.insertBefore(selector, rootElem);
 
   // Create search input
-  const searchBar = document.createElement("input");
+  searchBar = document.createElement("input");
   searchBar.placeholder = "Find an episode";
   searchBar.id = "episodeSearch";
   searchBar.name = "episodeSearch";
@@ -50,10 +55,10 @@ async function setup() {
   document.body.insertBefore(searchBar, selector.nextSibling);
 
   // Create episode count display
-  const episodeCountDisplay = document.createElement("p");
+  episodeCountDisplay = document.createElement("p");
   document.body.insertBefore(episodeCountDisplay, searchBar.nextSibling);
 
-  let allEpisodes = [];
+  //let allEpisodes = [];
 
   userNotification.textContent = "Loading episodes, please wait...";
 
@@ -65,9 +70,13 @@ async function setup() {
     .then((data) => {
       userNotification.textContent = "";
       allEpisodes = data;
+     
+      //insert in cache
+      episodeCache.set("82",data);
 
       populateDropdown(allEpisodes);
       makePageForEpisodes(allEpisodes);
+      searchBar.value = "";
       episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
     })
     .catch(() => {
@@ -91,6 +100,42 @@ async function setup() {
     if (url) window.open(url, "_blank");
   });
 
+showSelector.addEventListener("change", async (event) => {
+  const showSelectedId = event.target.value;
+
+  if (showSelectedId === "All") {
+   
+    allEpisodes=episodeCache.get("82");
+    populateDropdown(allEpisodes);
+    makePageForEpisodes(allEpisodes);
+    searchBar.value = "";
+    episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+    return;
+  }  
+  //search show episodes in cache
+  if(episodeCache.has(showSelectedId)) {
+    const cachedEpisode=episodeCache.get(showSelectedId);
+    allEpisodes=cachedEpisode;
+     populateDropdown(allEpisodes);
+     makePageForEpisodes(allEpisodes);
+     searchBar.value = "";
+     episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+
+  }else{
+  const response = await fetch(
+      `https://api.tvmaze.com/shows/${showSelectedId}/episodes`
+    );
+    const data = await response.json();
+    //save episodes in cache
+    episodeCache.set(showSelectedId,data);
+    allEpisodes = data;
+    populateDropdown(allEpisodes);
+    makePageForEpisodes(allEpisodes);
+    searchBar.value = "";
+    episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+
+  }}
+);
   // Helper to fill dropdown
   function populateDropdown(episodes) {
     selector.innerHTML = "";
@@ -118,7 +163,7 @@ async function setup() {
 
     const defaultOption = document.createElement("option");
     defaultOption.textContent = "Show all Shows";
-    defaultOption.value = "";
+    defaultOption.value = "All";
     showSelector.appendChild(defaultOption);
 
     shows.forEach((show) => {
@@ -130,13 +175,6 @@ async function setup() {
   }
 
 
-// async function fetchAllShows() {
-//   return [
-//     { id: 1, name: "Test Show 1" },
-//     { id: 2, name: "Test Show 2" },
-//     { id: 3, name: "Test Show 3" },
-//   ];
-// }
 async function fetchAllShows() {
   let pageNumber = 0;
   let allShows = [];
