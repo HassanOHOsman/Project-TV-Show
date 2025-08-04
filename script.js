@@ -46,11 +46,29 @@ function setup() {
   searchBar.id = "episodeSearch";
   searchBar.name = "episodeSearch";
 
-  document.body.insertBefore(searchBar, episodeSelector.nextSibling);
 
   // Create episode count display
   const episodeCountDisplay = document.createElement("p");
-  document.body.insertBefore(episodeCountDisplay, searchBar.nextSibling);
+
+
+  const searchContainer = document.createElement("div");
+  searchContainer.style.display = "inline-flex"; 
+  searchContainer.style.alignItems = "center";
+  searchContainer.style.gap = "1rem"; 
+  searchContainer.style.margin = "0";
+  searchContainer.style.padding = "0";
+
+  searchBar.style.margin = "0";
+  
+  searchContainer.appendChild(searchBar);
+  searchContainer.appendChild(episodeCountDisplay);
+
+  document.body.insertBefore(searchContainer, episodeSelector.nextSibling);
+
+
+ 
+ episodeCountDisplay.style.margin = "0";
+ episodeCountDisplay.style.whiteSpace = "nowrap"; 
 
   let allEpisodes = [];
 
