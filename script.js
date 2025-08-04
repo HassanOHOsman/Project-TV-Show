@@ -12,6 +12,7 @@ function makePageForEpisodes(episodeList) {
       String(episode.number).padStart(2, "0");
 
     const eachEpisode = document.createElement("div");
+    eachEpisode.style.marginBottom = "70px"; 
     eachEpisode.innerHTML = `
       <h3>${episode.name} - ${episodeCode}</h3>
       <img src="${episode.image?.medium || ""}" alt="Thumbnail for ${
