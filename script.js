@@ -70,6 +70,7 @@ function setup() {
       userNotification.textContent = "";
       allEpisodes = episodeData;
 
+      showData.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
       populateShowsDropdown(showData);
 
       showSelector.addEventListener("change", (event) => {
