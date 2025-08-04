@@ -22,6 +22,9 @@ function makePageForEpisodes(episodeList) {
     rootElem.appendChild(eachEpisode);
   });
 }
+
+const episodeCache = {};
+
 function setup() {
   const rootElem = document.getElementById("root");
 
@@ -87,6 +90,13 @@ function setup() {
 
         userNotification.textContent = "Loading episodes...";
 
+        if (episodeCache[selectedShow.id]) {
+          allEpisodes = episodeCache[selectedShow.id];
+          makePageForEpisodes(allEpisodes);
+          episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+          return;
+        }
+
         fetch(`https://api.tvmaze.com/shows/${selectedShow.id}/episodes`)
           .then((res) => {
             if (!res.ok) {
@@ -95,6 +105,7 @@ function setup() {
             return res.json();
           })
           .then((episodes) => {
+            episodeCache[selectedShow.id] = episodes;
             userNotification.textContent = "";
             allEpisodes = episodes;
             makePageForEpisodes(allEpisodes);
