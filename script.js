@@ -71,6 +71,42 @@ function setup() {
       allEpisodes = episodeData;
 
       populateShowsDropdown(showData);
+
+      showSelector.addEventListener("change", (event) => {
+        const selectedShowName = event.target.value;
+        const selectedShow = showData.find((show) => show.name === selectedShowName);
+
+        if (!selectedShow) {
+          allEpisodes = [];
+          makePageForEpisodes(allEpisodes);
+          populateEpisodesDropdown(allEpisodes);
+          episodeCountDisplay.textContent = "No show selected.";
+          return
+        }
+
+        userNotification.textContent = "Loading episodes...";
+
+        fetch(`https://api.tvmaze.com/shows/${selectedShow.id}/episodes`)
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error();
+            }
+            return res.json();
+          })
+          .then((episodes) => {
+            userNotification.textContent = "";
+            allEpisodes = episodes;
+            makePageForEpisodes(allEpisodes);
+            populateEpisodesDropdown(allEpisodes);
+            episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+          })
+          .catch(() => {
+            userNotification.textContent =
+              "Failed to load episodes for this show.";
+          });
+
+      });
+
       populateEpisodesDropdown(allEpisodes);
       makePageForEpisodes(allEpisodes);
       episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
