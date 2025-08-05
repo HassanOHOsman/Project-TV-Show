@@ -29,6 +29,11 @@ const episodeCache = {};
 function setup() {
   const rootElem = document.getElementById("root");
 
+  // Create show container to hold all shows info
+  const showContainer = document.createElement("div");
+  showContainer.id = "shows-container";
+  rootElem.appendChild(showContainer);
+
   // Create notification paragraph for loading/errors
   const userNotification = document.createElement("p");
   document.body.insertBefore(userNotification, rootElem);
@@ -47,29 +52,25 @@ function setup() {
   searchBar.id = "episodeSearch";
   searchBar.name = "episodeSearch";
 
-
   // Create episode count display
   const episodeCountDisplay = document.createElement("p");
 
-
   const searchContainer = document.createElement("div");
-  searchContainer.style.display = "inline-flex"; 
+  searchContainer.style.display = "inline-flex";
   searchContainer.style.alignItems = "center";
-  searchContainer.style.gap = "1rem"; 
+  searchContainer.style.gap = "1rem";
   searchContainer.style.margin = "0";
   searchContainer.style.padding = "0";
 
   searchBar.style.margin = "0";
-  
+
   searchContainer.appendChild(searchBar);
   searchContainer.appendChild(episodeCountDisplay);
 
   document.body.insertBefore(searchContainer, episodeSelector.nextSibling);
 
-
- 
- episodeCountDisplay.style.margin = "0";
- episodeCountDisplay.style.whiteSpace = "nowrap"; 
+  episodeCountDisplay.style.margin = "0";
+  episodeCountDisplay.style.whiteSpace = "nowrap";
 
   let allEpisodes = [];
 
@@ -88,23 +89,46 @@ function setup() {
 
       return { showData, episodeData };
     })
-    .then(({showData, episodeData}) => {
+    .then(({ showData, episodeData }) => {
       userNotification.textContent = "";
       allEpisodes = episodeData;
 
       showData.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+      showContainer.innerHTML = "";
+
+      showData.forEach((show) => {
+        const showCard = document.createElement("div");
+        showCard.classList.add("show-card");
+
+        showCard.innerHTML = `
+            <h3>${show.name}</h3>
+            <img src="${show.image?.medium || ""}" alt="${show.name}" />
+            <p>${show.summary}</p>
+            <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
+            <p><strong>Status:</strong> ${show.status}</p>
+            <p><strong>Rating:</strong> ${show.rating?.average || "N/A"}</p>
+            <p><strong>Runtime:</strong> ${show.runtime} mins</p>
+            <button data-show-id="${show.id}">View Episodes</button>
+          `;
+
+          showsContainer.appendChild(showCard);
+      });
+
       populateShowsDropdown(showData);
 
       showSelector.addEventListener("change", (event) => {
         const selectedShowName = event.target.value;
-        const selectedShow = showData.find((show) => show.name === selectedShowName);
+        const selectedShow = showData.find(
+          (show) => show.name === selectedShowName
+        );
 
         if (!selectedShow) {
           allEpisodes = [];
           makePageForEpisodes(allEpisodes);
           populateEpisodesDropdown(allEpisodes);
           episodeCountDisplay.textContent = "No show selected.";
-          return
+          return;
         }
 
         userNotification.textContent = "Loading episodes...";
@@ -135,7 +159,6 @@ function setup() {
             userNotification.textContent =
               "Failed to load episodes for this show.";
           });
-
       });
 
       populateEpisodesDropdown(allEpisodes);
@@ -176,8 +199,6 @@ function setup() {
       const option1 = document.createElement("option");
       option1.textContent = show.name;
       showSelector.appendChild(option1);
-
-      
     });
   }
 
@@ -192,7 +213,9 @@ function setup() {
 
     episodes.forEach((episode) => {
       const option2 = document.createElement("option");
-      const code = `S${String(episode.season).padStart(2, "0")}E${String(episode.number).padStart(2, "0")}`;
+      const code = `S${String(episode.season).padStart(2, "0")}E${String(
+        episode.number
+      ).padStart(2, "0")}`;
       option2.textContent = `${code} - ${episode.name}`;
       option2.value = episode.url;
       episodeSelector.appendChild(option2);
