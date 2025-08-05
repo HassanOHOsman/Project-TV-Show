@@ -45,6 +45,13 @@ function setup() {
   const episodeSelector = document.createElement("select");
   document.body.insertBefore(episodeSelector, rootElem);
 
+  const showSearchBar = document.createElement("input");
+  showSearchBar.placeholder = "Search shows";
+  showSearchBar.id = "showSearch";
+  showSearchBar.name = "showSearch";
+  document.body.insertBefore(showSearchBar, showSelector);
+
+
   const searchBar = document.createElement("input");
   searchBar.placeholder = "Find an episode";
   searchBar.id = "episodeSearch";
