@@ -101,25 +101,57 @@ function setup() {
         `;
 
         showContainer.appendChild(showCard);
+
+        showSelector.innerHTML = `<option value="">Display all shows</option>`;
+        showData.forEach((show) => {
+          const opt = document.createElement("option");
+          opt.value = show.id;
+          opt.textContent = show.name;
+          showSelector.appendChild(opt);
+        });
       });
 
-      // Populate show dropdown
-      showSelector.innerHTML = `<option value="">Display all shows</option>`;
-      showData.forEach((show) => {
-        const opt = document.createElement("option");
-        opt.value = show.id;
-        opt.textContent = show.name;
-        showSelector.appendChild(opt);
+      searchBar.addEventListener("input", () => {
+        const term = searchBar.value.toLowerCase();
+
+        const filteredShows = showData.filter((show) => {
+          return (
+            show.name.toLowerCase().includes(term) ||
+            show.genres.join(", ").toLowerCase().includes(term) ||
+            show.summary.toLowerCase().includes(term)
+          );
+        });
+
+        showContainer.innerHTML = "";
+        filteredShows.forEach((show) => {
+          const showCard = document.createElement("div");
+          showCard.classList.add("show-card");
+          showCard.style.marginBottom = "100px";
+
+          showCard.innerHTML = `
+            <h3>${show.name}</h3>
+            <img src="${show.image?.medium || ""}" alt="${show.name}" />
+            <p>${show.summary}</p>
+            <h5>Rating: ${show.rating?.average || "N/A"}</h5>
+            <h5>Genres: ${show.genres.join(", ")}</h5>
+            <h5>Status: ${show.status}</h5>
+            <h5>Runtime: ${show.runtime} mins</h5>
+            <button data-show-id="${show.id}">View Episodes</button>
+          `;
+
+          showContainer.appendChild(showCard);
+        });
       });
     });
 
-  // 2. Button click → load episodes
-  document.body.addEventListener("click", (e) => {
-    if (e.target.tagName === "BUTTON" && e.target.dataset.showId) {
-      const showId = e.target.dataset.showId;
-      fetchEpisodesForShow(showId);
-    }
-  });
+
+    // 2. Button click → load episodes
+    document.body.addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON" && e.target.dataset.showId) {
+        const showId = e.target.dataset.showId;
+        fetchEpisodesForShow(showId);
+      }
+    });
 
   function fetchEpisodesForShow(showId) {
     userNotification.textContent = "Loading episodes...";
