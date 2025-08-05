@@ -103,10 +103,10 @@ function setup() {
           <h3>${show.name}</h3>
           <img src="${show.image?.medium || ""}" alt="${show.name}" />
           <p>${show.summary}</p>
-          <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
-          <p><strong>Status:</strong> ${show.status}</p>
-          <p><strong>Rating:</strong> ${show.rating?.average || "N/A"}</p>
-          <p><strong>Runtime:</strong> ${show.runtime} mins</p>
+          <h5>Rating: ${show.rating?.average || "N/A"}</h5>
+          <h5>Genres: ${show.genres.join(", ")}</h5>
+          <h5>Status: ${show.status}</h5>
+          <h5>Runtime: ${show.runtime} mins</h5>
           <button data-show-id="${show.id}">View Episodes</button>
         `;
 
