@@ -98,6 +98,7 @@ function setup() {
       showData.forEach((show) => {
         const showCard = document.createElement("div");
         showCard.classList.add("show-card");
+        showCard.style.marginBottom = "100px";
 
         showCard.innerHTML = `
           <h3>${show.name}</h3>
