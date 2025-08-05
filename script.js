@@ -89,6 +89,22 @@ function setup() {
         showCard.classList.add("show-card");
         showCard.style.marginBottom = "100px";
 
+      showSelector.addEventListener("change", () => {
+        const selectedShowId = showSelector.value;
+        if (selectedShowId) {
+          fetchEpisodesForShow(selectedShowId);
+        } else {
+          // If user selects "Display all shows"
+          rootElem.innerHTML = "";
+          showContainer.style.display = "block";
+          backToShowsButton.style.display = "none";
+          episodeSelector.innerHTML = "";
+          episodeCountDisplay.textContent = "";
+          searchBar.value = "";
+        }
+      });
+      
+
         showCard.innerHTML = `
           <h3>${show.name}</h3>
           <img src="${show.image?.medium || ""}" alt="${show.name}" />
