@@ -139,6 +139,8 @@ function setup() {
     makePageForEpisodes(episodes);
     populateEpisodesDropdown(episodes);
     episodeCountDisplay.textContent = `Displaying ${episodes.length}/${episodes.length} episodes.`;
+    showContainer.style.display = "none"; 
+    backToShowsButton.style.display = "inline"; 
   }
 
   // 3. Search bar logic
@@ -172,6 +174,15 @@ function setup() {
       episodeSelector.appendChild(opt);
     });
   }
+  backToShowsButton.addEventListener("click", () => {
+    showContainer.style.display = "block"; // Show shows
+    rootElem.innerHTML = ""; // Hide episode list
+    backToShowsButton.style.display = "none"; // Hide back button
+    episodeSelector.innerHTML = ""; // Clear dropdown
+    episodeCountDisplay.textContent = ""; // Clear episode count
+    searchBar.value = ""; // Clear search bar
+  });
+
 }
 
 
