@@ -32,68 +32,44 @@ const episodeCache = {};
 function setup() {
   const rootElem = document.getElementById("root");
 
-  // Create show container to hold all shows info
   const showContainer = document.createElement("div");
   showContainer.id = "shows-container";
   rootElem.appendChild(showContainer);
 
-  // Create notification paragraph for loading/errors
   const userNotification = document.createElement("p");
   document.body.insertBefore(userNotification, rootElem);
 
-  // Create dropdown show selector
   const showSelector = document.createElement("select");
   document.body.insertBefore(showSelector, rootElem);
 
-  // Create dropdown episode selector
   const episodeSelector = document.createElement("select");
   document.body.insertBefore(episodeSelector, rootElem);
 
-  // Create search input
   const searchBar = document.createElement("input");
   searchBar.placeholder = "Find an episode";
   searchBar.id = "episodeSearch";
   searchBar.name = "episodeSearch";
 
-  // Create episode count display
   const episodeCountDisplay = document.createElement("p");
 
   const searchContainer = document.createElement("div");
   searchContainer.style.display = "inline-flex";
   searchContainer.style.alignItems = "center";
   searchContainer.style.gap = "1rem";
-  searchContainer.style.margin = "0";
-  searchContainer.style.padding = "0";
-
-  searchBar.style.margin = "0";
 
   searchContainer.appendChild(searchBar);
   searchContainer.appendChild(episodeCountDisplay);
-
   document.body.insertBefore(searchContainer, episodeSelector.nextSibling);
-
-  episodeCountDisplay.style.margin = "0";
-  episodeCountDisplay.style.whiteSpace = "nowrap";
 
   let allEpisodes = [];
 
-  userNotification.textContent = "Loading episodes, please wait...";
-
+  // 1. Load all shows initially
   fetch("https://api.tvmaze.com/shows")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Failed to fetch shows.");
-      }
-      return response.json();
-    })
+    .then((response) => response.json())
     .then((showData) => {
-      userNotification.textContent = "";
-
       showData.sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       );
-
-      showContainer.innerHTML = "";
 
       showData.forEach((show) => {
         const showCard = document.createElement("div");
@@ -114,67 +90,80 @@ function setup() {
         showContainer.appendChild(showCard);
       });
 
-      populateShowsDropdown(showData);
-    })
-    .catch(() => {
-      userNotification.textContent =
-        "Failed to load shows. Please try again later.";
+      // Populate show dropdown
+      showSelector.innerHTML = `<option value="">Display all shows</option>`;
+      showData.forEach((show) => {
+        const opt = document.createElement("option");
+        opt.value = show.id;
+        opt.textContent = show.name;
+        showSelector.appendChild(opt);
+      });
     });
 
+  // 2. Button click → load episodes
+  document.body.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON" && e.target.dataset.showId) {
+      const showId = e.target.dataset.showId;
+      fetchEpisodesForShow(showId);
+    }
+  });
 
+  function fetchEpisodesForShow(showId) {
+    userNotification.textContent = "Loading episodes...";
 
+    if (episodeCache[showId]) {
+      renderEpisodes(episodeCache[showId]);
+      return;
+    }
 
+    fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+      .then((res) => res.json())
+      .then((episodes) => {
+        episodeCache[showId] = episodes;
+        renderEpisodes(episodes);
+      })
+      .catch(() => {
+        userNotification.textContent = "Failed to load episodes.";
+      });
+  }
 
+  function renderEpisodes(episodes) {
+    userNotification.textContent = "";
+    allEpisodes = episodes;
+    makePageForEpisodes(episodes);
+    populateEpisodesDropdown(episodes);
+    episodeCountDisplay.textContent = `Displaying ${episodes.length}/${episodes.length} episodes.`;
+  }
 
+  // 3. Search bar logic
   searchBar.addEventListener("input", () => {
-    const searchTerm = searchBar.value.toLowerCase();
+    const term = searchBar.value.toLowerCase();
     const filtered = allEpisodes.filter(
-      (episode) =>
-        episode.name.toLowerCase().includes(searchTerm) ||
-        episode.summary.toLowerCase().includes(searchTerm)
+      (ep) =>
+        ep.name.toLowerCase().includes(term) ||
+        ep.summary.toLowerCase().includes(term)
     );
     makePageForEpisodes(filtered);
     episodeCountDisplay.textContent = `Displaying ${filtered.length}/${allEpisodes.length} episodes.`;
   });
 
+  // 4. Episode dropdown
   episodeSelector.addEventListener("change", () => {
     const url = episodeSelector.value;
     if (url) window.open(url, "_blank");
   });
 
-  // Helper to fill shows dropdown
-  function populateShowsDropdown(shows) {
-    showSelector.innerHTML = "";
-
-    const defaultOption1 = document.createElement("option");
-    defaultOption1.textContent = "Display all shows";
-    defaultOption1.value = "";
-    showSelector.appendChild(defaultOption1);
-
-    shows.forEach((show) => {
-      const option1 = document.createElement("option");
-      option1.textContent = show.name;
-      showSelector.appendChild(option1);
-    });
-  }
-
-  // Helper to fill episodes dropdown
+  // 5. Helpers
   function populateEpisodesDropdown(episodes) {
-    episodeSelector.innerHTML = "";
-
-    const defaultOption2 = document.createElement("option");
-    defaultOption2.textContent = "Show all episodes";
-    defaultOption2.value = "";
-    episodeSelector.appendChild(defaultOption2);
-
-    episodes.forEach((episode) => {
-      const option2 = document.createElement("option");
-      const code = `S${String(episode.season).padStart(2, "0")}E${String(
-        episode.number
+    episodeSelector.innerHTML = `<option value="">Show all episodes</option>`;
+    episodes.forEach((ep) => {
+      const code = `S${String(ep.season).padStart(2, "0")}E${String(
+        ep.number
       ).padStart(2, "0")}`;
-      option2.textContent = `${code} - ${episode.name}`;
-      option2.value = episode.url;
-      episodeSelector.appendChild(option2);
+      const opt = document.createElement("option");
+      opt.value = ep.url;
+      opt.textContent = `${code} - ${ep.name}`;
+      episodeSelector.appendChild(opt);
     });
   }
 }
