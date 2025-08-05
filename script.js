@@ -79,24 +79,19 @@ function setup() {
 
   userNotification.textContent = "Loading episodes, please wait...";
 
-  Promise.all([
-    fetch("https://api.tvmaze.com/shows"),
-    fetch("https://api.tvmaze.com/shows/82/episodes"),
-  ])
-    .then(async ([showResponse, episodeResponse]) => {
-      if (!showResponse.ok || !episodeResponse.ok) {
-        throw new Error("Network error");
+  fetch("https://api.tvmaze.com/shows")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch shows.");
       }
-      const showData = await showResponse.json();
-      const episodeData = await episodeResponse.json();
-
-      return { showData, episodeData };
+      return response.json();
     })
-    .then(({ showData, episodeData }) => {
+    .then((showData) => {
       userNotification.textContent = "";
-      allEpisodes = episodeData;
 
-      showData.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+      showData.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      );
 
       showContainer.innerHTML = "";
 
@@ -105,73 +100,30 @@ function setup() {
         showCard.classList.add("show-card");
 
         showCard.innerHTML = `
-            <h3>${show.name}</h3>
-            <img src="${show.image?.medium || ""}" alt="${show.name}" />
-            <p>${show.summary}</p>
-            <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
-            <p><strong>Status:</strong> ${show.status}</p>
-            <p><strong>Rating:</strong> ${show.rating?.average || "N/A"}</p>
-            <p><strong>Runtime:</strong> ${show.runtime} mins</p>
-            <button data-show-id="${show.id}">View Episodes</button>
-          `;
+          <h3>${show.name}</h3>
+          <img src="${show.image?.medium || ""}" alt="${show.name}" />
+          <p>${show.summary}</p>
+          <p><strong>Genres:</strong> ${show.genres.join(", ")}</p>
+          <p><strong>Status:</strong> ${show.status}</p>
+          <p><strong>Rating:</strong> ${show.rating?.average || "N/A"}</p>
+          <p><strong>Runtime:</strong> ${show.runtime} mins</p>
+          <button data-show-id="${show.id}">View Episodes</button>
+        `;
 
-          showContainer.appendChild(showCard);
+        showContainer.appendChild(showCard);
       });
 
       populateShowsDropdown(showData);
-
-      showSelector.addEventListener("change", (event) => {
-        const selectedShowName = event.target.value;
-        const selectedShow = showData.find(
-          (show) => show.name === selectedShowName
-        );
-
-        if (!selectedShow) {
-          allEpisodes = [];
-          makePageForEpisodes(allEpisodes);
-          populateEpisodesDropdown(allEpisodes);
-          episodeCountDisplay.textContent = "No show selected.";
-          return;
-        }
-
-        userNotification.textContent = "Loading episodes...";
-
-        if (episodeCache[selectedShow.id]) {
-          allEpisodes = episodeCache[selectedShow.id];
-          makePageForEpisodes(allEpisodes);
-          episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
-          return;
-        }
-
-        fetch(`https://api.tvmaze.com/shows/${selectedShow.id}/episodes`)
-          .then((res) => {
-            if (!res.ok) {
-              throw new Error();
-            }
-            return res.json();
-          })
-          .then((episodes) => {
-            episodeCache[selectedShow.id] = episodes;
-            userNotification.textContent = "";
-            allEpisodes = episodes;
-            // makePageForEpisodes(allEpisodes);
-            // populateEpisodesDropdown(allEpisodes);
-            // episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
-          })
-          .catch(() => {
-            userNotification.textContent =
-              "Failed to load episodes for this show.";
-          });
-      });
-
-      // populateEpisodesDropdown(allEpisodes);
-      // makePageForEpisodes(allEpisodes);
-      // episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
     })
     .catch(() => {
       userNotification.textContent =
-        "Failed to load episodes. Please try again later.";
+        "Failed to load shows. Please try again later.";
     });
+
+
+
+
+
 
   searchBar.addEventListener("input", () => {
     const searchTerm = searchBar.value.toLowerCase();
