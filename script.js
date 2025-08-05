@@ -112,7 +112,7 @@ function setup() {
             <button data-show-id="${show.id}">View Episodes</button>
           `;
 
-          showsContainer.appendChild(showCard);
+          showContainer.appendChild(showCard);
       });
 
       populateShowsDropdown(showData);
