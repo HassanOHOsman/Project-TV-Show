@@ -2,6 +2,9 @@
 
 function makePageForEpisodes(episodeList) {
   const rootElem = document.getElementById("root");
+  const showContainer = document.getElementById("shows-container");
+  if (showContainer) showContainer.style.display = "none";
+
   rootElem.innerHTML = ""; 
 
   episodeList.forEach((episode) => {
@@ -151,9 +154,9 @@ function setup() {
             episodeCache[selectedShow.id] = episodes;
             userNotification.textContent = "";
             allEpisodes = episodes;
-            makePageForEpisodes(allEpisodes);
-            populateEpisodesDropdown(allEpisodes);
-            episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+            // makePageForEpisodes(allEpisodes);
+            // populateEpisodesDropdown(allEpisodes);
+            // episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
           })
           .catch(() => {
             userNotification.textContent =
@@ -161,9 +164,9 @@ function setup() {
           });
       });
 
-      populateEpisodesDropdown(allEpisodes);
-      makePageForEpisodes(allEpisodes);
-      episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
+      // populateEpisodesDropdown(allEpisodes);
+      // makePageForEpisodes(allEpisodes);
+      // episodeCountDisplay.textContent = `Displaying ${allEpisodes.length}/${allEpisodes.length} episodes.`;
     })
     .catch(() => {
       userNotification.textContent =
