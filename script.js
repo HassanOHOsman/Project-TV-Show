@@ -61,6 +61,12 @@ function setup() {
   searchContainer.appendChild(episodeCountDisplay);
   document.body.insertBefore(searchContainer, episodeSelector.nextSibling);
 
+  const backToShowsButton = document.createElement("button");
+  backToShowsButton.textContent = "← Back to Shows";
+  backToShowsButton.style.display = "none";
+  document.body.insertBefore(backToShowsButton, rootElem);
+
+
   let allEpisodes = [];
 
   // 1. Load all shows initially
