@@ -111,8 +111,8 @@ function setup() {
         });
       });
 
-      searchBar.addEventListener("input", () => {
-        const term = searchBar.value.toLowerCase();
+      showSearchBar.addEventListener("input", () => {
+        const term = showSearchBar.value.toLowerCase();
 
         const filteredShows = showData.filter((show) => {
           return (
