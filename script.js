@@ -51,6 +51,10 @@ function setup() {
   showSearchBar.name = "showSearch";
   document.body.insertBefore(showSearchBar, showSelector);
 
+  const showCountDisplay = document.createElement("p");
+  showCountDisplay.id = "show-count";
+  document.body.insertBefore(showCountDisplay, showSelector.nextSibling);
+
 
   const searchBar = document.createElement("input");
   searchBar.placeholder = "Find an episode";
@@ -118,14 +122,21 @@ function setup() {
 
         showContainer.appendChild(showCard);
 
-        showSelector.innerHTML = `<option value="">Display all shows</option>`;
-        showData.forEach((show) => {
-          const opt = document.createElement("option");
-          opt.value = show.id;
-          opt.textContent = show.name;
-          showSelector.appendChild(opt);
-        });
       });
+
+      showSelector.innerHTML = `<option value="">Display all shows</option>`;
+      showData.forEach((show) => {
+        const opt = document.createElement("option");
+        opt.value = show.id;
+        opt.textContent = show.name;
+        showSelector.appendChild(opt);
+      });
+
+      showCountDisplay.textContent = `Displaying ${showData.length}/${showData.length} shows.`;
+
+
+
+      
 
       showSearchBar.addEventListener("input", () => {
         const term = showSearchBar.value.toLowerCase();
@@ -139,10 +150,15 @@ function setup() {
         });
 
         showContainer.innerHTML = "";
+
+        showCountDisplay.textContent = `Displaying ${filteredShows.length}/${showData.length} shows.`;
+
         filteredShows.forEach((show) => {
           const showCard = document.createElement("div");
           showCard.classList.add("show-card");
           showCard.style.marginBottom = "100px";
+
+
 
           showCard.innerHTML = `
             <h3>${show.name}</h3>
